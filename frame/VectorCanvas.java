@@ -22,7 +22,21 @@ public class VectorCanvas extends JComponent {
 	public VectorCanvas(Vector2D vector, Point2D start) {
 		this.setSize(WIDTH, HEIGHT);
 		this.vector = vector;
-		lines.add(new Line2D(start, vector.applyTo(start)));
+		Line2D line = new Line2D(start, vector.applyTo(start));
+		int i = 0;
+		if (lines.size() > 0) {
+			for (Line2D l : lines) {
+				if (l.isSame(line)) {
+					i++;
+					break;
+				}
+			}
+			if (i == 0) {
+				lines.add(line);
+			}
+		} else {
+			lines.add(line);
+		}
 	}
 	
 	@Override
@@ -32,10 +46,20 @@ public class VectorCanvas extends JComponent {
 		g.setColor(Color.WHITE);
 		g.fillRect(1, 1, WIDTH - 1, HEIGHT - 1);
 		
+		g.setColor(Color.BLACK);
+		for (int i = 50; i < WIDTH; i+=50) {
+			g.drawLine(i, 0, i, 10);
+			g.drawString(String.valueOf(i), i, 20);
+		}
+		for (int j = 50; j < HEIGHT; j+=50) {
+			g.drawLine(0, j, 10, j);
+			g.drawString(String.valueOf(j), 10, j);
+		}
+		
 		g.setColor(randomColor());
-		for (int i = 0; i < lines.size(); i++) {
-			Point2D start = lines.get(i).getStart();
-			Point2D end = lines.get(i).getEnd();
+		for (Line2D line : lines) {
+			Point2D start = line.getStart();
+			Point2D end = line.getEnd();
 			g.drawLine((int) start.getX(), (int) start.getY(), (int) end.getX(), (int) end.getY());
 		}
 	}

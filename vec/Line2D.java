@@ -10,6 +10,15 @@ public class Line2D {
 		this.end = end;
 	}
 	
+	public boolean isSame(Line2D other) {
+		return start.isSame(other.getStart()) && end.isSame(other.getEnd());
+	}
+	
+	public String print() {
+		return "(" + start.getX() + ", " + start.getY() + ") -> "
+				+ "(" + end.getX() + ", " + end.getY() + ")";
+	}
+	
 	public Point2D getStart() {
 		return start;
 	}

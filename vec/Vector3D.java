@@ -35,8 +35,8 @@ public class Vector3D extends Vector2D {
 	
 	@Override
 	public String print() {
-		return "(  " + getX() + "   )\n" + "(  " + getY() + "   )\n" +
-				"(  " + z + "   )";
+		return "(  " + getX() + "   )\n" + "(  " + getY() + "   )\n"
+				+ "(  " + z + "   )";
 	}
 	
 	@Override
