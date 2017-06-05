@@ -20,7 +20,7 @@ public class Vector3D extends Vector2D {
 		return scalarMulti(-1);
 	}
 	
-	public double getLenght() {
+	public double getLength() {
 		return Math.sqrt(getX()*getX() + getY()*getY() + z*z);
 	}
 	
