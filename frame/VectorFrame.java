@@ -6,6 +6,8 @@ import java.awt.GridLayout;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -14,6 +16,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import utils.Colors;
+import vec.Line2D;
 import vec.Point2D;
 import vec.Vector2D;
 
@@ -30,7 +34,9 @@ public class VectorFrame extends JComponent implements ActionListener {
 	private TextField vxText = new TextField();
 	private TextField vyText = new TextField();
 	private JButton applyButton = new JButton("apply");
-	private JComboBox<String> comboBox = new JComboBox<>(VectorCanvas.COLORS);
+	private JButton undoButton = new JButton("undo");
+	private JButton clearButton = new JButton("clear");
+	private JComboBox<String> comboBox = new JComboBox<>(getColorNames());
 	private JLabel currentStartP = new JLabel();
 	private JLabel currentEndP = new JLabel();
 	private JLabel currentVector = new JLabel();
@@ -42,6 +48,14 @@ public class VectorFrame extends JComponent implements ActionListener {
 		init();
 	}
 	
+	private String[] getColorNames() {
+		ArrayList<String> colList = new ArrayList<>();
+		for (Colors col : Colors.values()) {
+			colList.add(col.getText());
+		}
+		return colList.toArray(new String[0]);
+	}
+
 	public void init() {
 		frame.setTitle("Vector Demo");
 		frame.setSize(WIDTH, HEIGHT);
@@ -52,7 +66,7 @@ public class VectorFrame extends JComponent implements ActionListener {
 		
 		main.setLayout(new BorderLayout());
 		labelPanel.setLayout(new GridLayout(5, 2));
-		vectorPanel.setLayout(new GridLayout(4, 2));
+		vectorPanel.setLayout(new GridLayout(4, 3));
 		JLabel xCoor = new JLabel("Enter x-coordinate:");
 		JLabel yCoor = new JLabel("Enter y-coordinate:");
 		JLabel vxCoor = new JLabel("Vector x-component:");
@@ -62,6 +76,10 @@ public class VectorFrame extends JComponent implements ActionListener {
 		JLabel vector = new JLabel("Vector:");
 		JLabel vectorLength = new JLabel("Vector length:");
 		applyButton.addActionListener(this);
+		undoButton.addActionListener(this);
+		undoButton.setEnabled(true);
+		clearButton.addActionListener(this);
+		clearButton.setEnabled(true);
 		comboBox.addActionListener(this);
 		comboBox.setBackground(Color.WHITE);
 		
@@ -78,12 +96,16 @@ public class VectorFrame extends JComponent implements ActionListener {
 		
 		vectorPanel.add(startP);
 		vectorPanel.add(currentStartP);
+		vectorPanel.add(new JLabel());
 		vectorPanel.add(endP);
 		vectorPanel.add(currentEndP);
+		vectorPanel.add(new JLabel());
 		vectorPanel.add(vector);
 		vectorPanel.add(currentVector);
+		vectorPanel.add(undoButton);
 		vectorPanel.add(vectorLength);
 		vectorPanel.add(currentVectorLength);
+		vectorPanel.add(clearButton);
 		
 		main.add(labelPanel, BorderLayout.NORTH);
 		main.add(vectorPanel, BorderLayout.SOUTH);
@@ -98,13 +120,18 @@ public class VectorFrame extends JComponent implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent ae) {
 		if (ae.getActionCommand().equals(applyButton.getText())) {
-			handleVectorCanvasChanged();
-		} else {
+			handleNewVector();
+		} else if (ae.getActionCommand().equals(undoButton.getText())) {
+			handleUndo();
+		} else if (ae.getActionCommand().equals(clearButton.getText())) {
+			handleClear();
+	    } else {
 			handleComboBoxChanged();
 		}
 	}
 
-	private void handleVectorCanvasChanged() {
+	// Action event handlers:
+	private void handleNewVector() {
 		Point2D p = handlePoint(xText.getText(), yText.getText());
 		Vector2D v = handleVector(vxText.getText(), vyText.getText(), p);
 		if (v != null && p != null) {
@@ -125,46 +152,61 @@ public class VectorFrame extends JComponent implements ActionListener {
 			currentStartP.setText(p.print());
 			currentEndP.setText(endPoint.print());
 			currentVector.setText(v.print());
-			currentVectorLength.setText(String.valueOf(v.getLength()));
+			currentVectorLength.setText(String.valueOf(v.getLength()) + " pixels");
 			
 			frame.validate();
 			frame.repaint();
 		}
 	}
 
-	private void handleComboBoxChanged() {
-		VectorCanvas.setCurrentCol(getCurrentColor((String) comboBox.getSelectedItem()));
-	}
-
-	private Color getCurrentColor(String col) {
-		switch (col) {
-		case "black":
-			return Color.BLACK;
-		case "blue":
-			return Color.BLUE;
-		case "cyan":
-			return Color.CYAN;
-		case "dark-gray":
-			return Color.DARK_GRAY;
-		case "gray":
-			return Color.GRAY;
-		case "green":
-			return Color.GREEN;
-		case "light-gray":
-			return Color.LIGHT_GRAY;
-		case "magenta":
-			return Color.MAGENTA;
-		case "orange":
-			return Color.ORANGE;
-		case "pink":
-			return Color.PINK;
-		case "red":
-			return Color.RED;
-		default:
-			return Color.YELLOW;
+	private void handleUndo() {
+		ArrayList<Line2D> lines = VectorCanvas.getLines();
+		if (lines.size() > 0) {
+			Line2D removedLine = lines.get(lines.size() - 1);
+		    lines.remove(lines.size() - 1);
+		    
+		    Point2D savePoint;
+		    if (lines.size() > 0) {
+		        savePoint = lines.get(lines.size() - 1).getEnd();
+		    } else {
+		    	savePoint = removedLine.getStart();
+		    }
+		    xText.setText(Integer.toString((int) savePoint.getX()));
+	        yText.setText(Integer.toString((int) savePoint.getY()));
+		    
+		    frame.validate();
+		    frame.repaint();
 		}
 	}
+	
+	private void handleClear() {
+		ArrayList<Line2D> lines = VectorCanvas.getLines();
+		if (lines.size() > 0) {
+		    int reply = JOptionPane.showConfirmDialog
+				    (frame, "Are you sure?", "Clear Canvas", JOptionPane.YES_NO_OPTION);
+		    if (reply == JOptionPane.YES_OPTION) {
+	            VectorCanvas.getLines().clear();
+	            xText.setText("");
+	            yText.setText("");
+	            frame.validate();
+	            frame.repaint();
+		    }
+		}
+	}
+	
+	private void handleComboBoxChanged() {
+		String item = (String) comboBox.getSelectedItem();
+		Color currentCol = Colors.BLACK.getCol();
+		for (Colors col : Colors.values()) {
+			if (col.getText().equals(item)) {
+				currentCol = col.getCol();
+				break;
+			}
+		}
+		VectorCanvas.setCurrentCol(currentCol);
+	}
 
+	// User input handlers:
 	public Point2D handlePoint(String x, String y) {
 		try {
 			double xCoor = Double.parseDouble(x);

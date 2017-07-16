@@ -15,10 +15,6 @@ public class VectorCanvas extends JComponent {
 	public static Color currentCol = Color.BLACK;
 	public static final int WIDTH = 750;
 	public static final int HEIGHT = 500;
-	public static final String[] COLORS = {"black", "blue", "cyan", "dark-gray",
-			                                "gray", "green", "light-gray",
-			                                "magenta", "orange", "pink", "red",
-			                                "yellow"};
 	private Vector2D vector;
 	private static ArrayList<Line2D> lines = new ArrayList<>();
 	
@@ -64,5 +60,9 @@ public class VectorCanvas extends JComponent {
 	
 	public static void setCurrentCol(Color col) {
 		currentCol = col;
+	}
+	
+	public static ArrayList<Line2D> getLines() {
+		return lines;
 	}
 }
