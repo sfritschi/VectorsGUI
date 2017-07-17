@@ -8,7 +8,7 @@ public enum Colors {
 	BLUE ("<html><font color='blue'>blue</font>", Color.BLUE),
 	RED ("<html><font color='red'>red</font>", Color.RED),
 	YELLOW ("<html><font color='yellow'>yellow</font>", Color.YELLOW),
-	GREEN ("<html><font color='green'>green</font>", Color.GREEN),
+	GREEN ("<html><font color='#66FF33'>green</font>", Color.GREEN),
 	CYAN ("<html><font color='#00CCFF'>cyan</font>", Color.CYAN),
 	DARK_GRAY ("<html><font color='#333333'>dark-gray</font>", Color.DARK_GRAY),
 	GRAY ("<html><font color='gray'>gray</font>", Color.GRAY),

@@ -31,7 +31,7 @@ public class Vector2D {
 	}
 	
 	public String print() {
-		return "(  " + x + "   )\n" + "(  " + y + "   )";
+		return "<html>(  " + x + "   )<br>" + "(  " + y + "   )</html>";
 	}
 	
 	public double getX() {

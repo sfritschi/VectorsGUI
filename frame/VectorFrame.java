@@ -41,8 +41,8 @@ public class VectorFrame extends JComponent implements ActionListener {
 	private JLabel currentEndP = new JLabel();
 	private JLabel currentVector = new JLabel();
 	private JLabel currentVectorLength = new JLabel();
-	public static final int WIDTH = 750;
-	public static final int HEIGHT = 750;
+	public static final int WIDTH = 757;
+	public static final int HEIGHT = 825;
 	
 	public VectorFrame() {
 		init();
@@ -188,6 +188,7 @@ public class VectorFrame extends JComponent implements ActionListener {
 	            VectorCanvas.getLines().clear();
 	            xText.setText("");
 	            yText.setText("");
+	            
 	            frame.validate();
 	            frame.repaint();
 		    }
